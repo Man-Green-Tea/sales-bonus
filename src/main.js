@@ -6,6 +6,8 @@
  */
 function calculateSimpleRevenue(purchase, _product) {
    // @TODO: Расчет выручки от операции
+   const discount = 1 - (purchase.discount / 100);
+   return purchase.sales_price * purchase.quantity * discount;
 }
 
 /**
@@ -17,6 +19,16 @@ function calculateSimpleRevenue(purchase, _product) {
  */
 function calculateBonusByProfit(index, total, seller) {
     // @TODO: Расчет бонуса от позиции в рейтинге
+    const bonusRange = () => {
+        switch(index) {
+            case 0: return 0.15
+            case 1:
+            case 2: return 0.1
+            case (total - 1): return 0;
+            default: return 0.05
+        }
+    }
+    return (bonusRange() * seller.profit)
 }
 
 /**
