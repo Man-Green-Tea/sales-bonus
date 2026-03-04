@@ -7,7 +7,7 @@
 function calculateSimpleRevenue(purchase, _product) {
   //Расчет выручки от операции
   const discount = 1 - purchase.discount / 100;
-  const revenue = purchase.sales_price * purchase.quantity * discount
+  const revenue = purchase.sales_price * purchase.quantity * discount;
   return +revenue.toFixed(2);
 }
 
@@ -55,9 +55,9 @@ function analyzeSalesData(data, options) {
     !Array.isArray(data.sellers) ||
     !Array.isArray(data.products) ||
     !Array.isArray(data.purchase_records) ||
-    data.seller.lenght === 0 ||
-    data.products.lenght === 0 ||
-    data.purchase_records.lenght === 0
+    data.sellers.length === 0 ||
+    data.products.length === 0 ||
+    data.purchase_records.length === 0
   ) {
     throw new Error("Некорректные входные данные");
   }
@@ -93,7 +93,7 @@ function analyzeSalesData(data, options) {
     }, {});
   }
   const sellerIndex = indexArrBy(sellerStats, "id");
-  const productIndex = indexArrBy(data.products, "sku")
+  const productIndex = indexArrBy(data.products, "sku");
 
   //Расчет выручки и прибыли для каждого продавца
   data.purchase_records.forEach((record) => {
@@ -123,28 +123,26 @@ function analyzeSalesData(data, options) {
 
   //Назначение премий на основе ранжирования
   sellerStats.forEach((seller, index) => {
-    seller.bonus = calculateBonus(index, sellerStats.lenght, seller);
-  });
+    seller.bonus = calculateBonus(index, sellerStats.length, seller);
 
-  //топ 10 продуктов
-  seller.top_products = Object.entries(seller.products_sold).map(
-    ([sku, quantity]) =>
-      ({
+    //топ 10 продуктов
+    seller.top_products = Object.entries(seller.products_sold)
+      .map(([sku, quantity]) => ({
         sku: sku,
         quantity: quantity,
-      })
-        .sort((a, b) => b.quantity - a.quantity)
-        .slice(0, 10),
-  );
+      }))
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 10);
+  });
 
   //Подготовка итоговой коллекции с нужными полями
-  return sellerStats.map(seller => ({
+  return sellerStats.map((seller) => ({
     seller_id: seller.id,
     name: seller.name,
     revenue: seller.revenue,
     profit: seller.profit,
     sales_count: seller.sales_count,
     top_products: seller.top_products,
-    bonus: seller.bonus
-  }))
+    bonus: seller.bonus,
+  }));
 }
