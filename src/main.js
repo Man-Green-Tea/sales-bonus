@@ -7,8 +7,7 @@
 function calculateSimpleRevenue(purchase, _product) {
   //Расчет выручки от операции
   const discount = 1 - purchase.discount / 100;
-  const revenue = purchase.sales_price * purchase.quantity * discount;
-  return +revenue.toFixed(2);
+  return purchase.sale_price * purchase.quantity * discount;
 }
 
 /**
@@ -38,8 +37,7 @@ function calculateBonusByProfit(index, total, seller) {
     }
   };
 
-  const bonus = bonusPercentage * seller.profit;
-  return +bonus.toFixed(2);
+  return bonusPercentage() * seller.profit;
 }
 
 /**
@@ -113,13 +111,14 @@ function analyzeSalesData(data, options) {
       seller.profit += profit;
 
       if (!seller.products_sold[item.sku]) {
-        seller.products_sold[item.sku] += item.quantity;
+        seller.products_sold[item.sku] = 0;
       }
+      seller.products_sold[item.sku] += item.quantity;
     });
   });
 
   //Сортировка продавцов по прибыли
-  sellerStats.sort((a, b) => (b.profit = a.profit));
+  sellerStats.sort((a, b) => b.profit - a.profit);
 
   //Назначение премий на основе ранжирования
   sellerStats.forEach((seller, index) => {
@@ -139,10 +138,10 @@ function analyzeSalesData(data, options) {
   return sellerStats.map((seller) => ({
     seller_id: seller.id,
     name: seller.name,
-    revenue: seller.revenue,
-    profit: seller.profit,
+    revenue: +seller.revenue.toFixed(2),
+    profit: +seller.profit.toFixed(2),
     sales_count: seller.sales_count,
     top_products: seller.top_products,
-    bonus: seller.bonus,
+    bonus: +seller.bonus.toFixed(2),
   }));
 }
